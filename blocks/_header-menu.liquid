@@ -64,6 +64,29 @@
       </div>
     {% endif %}
   {% else %}
+    {% if section.settings.nadeshiko_header %}
+      {% liquid
+        assign about_url = section.settings.about_url | default: '/pages/about'
+        assign guide_url = section.settings.guide_url | default: '/pages/guide'
+        assign faq_url = section.settings.faq_url | default: '/pages/faq'
+        assign contact_url = section.settings.contact_url | default: '/pages/contact'
+      %}
+      <div
+        class="header-menu nadeshiko-header-menu"
+        {{ block.shopify_attributes }}
+        data-hydration-key="header-menu"
+        data-skip-node-update
+      >
+        <nav aria-label="{{ 'accessibility.header_navigation_label' | t }}">
+          <ul class="nadeshiko-header-menu__list list-unstyled" role="list">
+            <li><a href="{{ about_url }}">〇〇について</a></li>
+            <li><a href="{{ guide_url }}">お買い物ガイド</a></li>
+            <li><a href="{{ faq_url }}">よくあるご質問</a></li>
+            <li><a href="{{ contact_url }}">お問い合わせ</a></li>
+          </ul>
+        </nav>
+      </div>
+    {% else %}
     {% liquid
       assign block_settings = block.settings
       assign menu_content_type = block_settings.menu_style | default: 'text'
@@ -221,6 +244,7 @@
         fetchpriority="low"
       ></script>
     </header-menu>
+    {% endif %}
 {% endcase %}
 
 {% style %}
@@ -229,6 +253,30 @@
   }
 {% endstyle %}
 {% stylesheet %}
+  .nadeshiko-header-menu__list {
+    display: flex;
+    align-items: center;
+    gap: clamp(24px, 2.2vw, 38px);
+    margin: 0;
+    padding: 0;
+  }
+
+  .nadeshiko-header-menu__list a {
+    display: block;
+    color: #414040;
+    font-family: var(--font-body--family);
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 1.5;
+    letter-spacing: 0.04em;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .nadeshiko-header-menu__list a:hover {
+    opacity: 0.62;
+  }
+
   .header__drawer {
     --header-drawer-min-height: 60px;
     display: flex;

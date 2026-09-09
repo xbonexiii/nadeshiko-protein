@@ -103,10 +103,37 @@
           class="menu-drawer__menu has-submenu"
           role="list"
         >
+          {% if section.settings.nadeshiko_header %}
+            {% liquid
+              assign about_url = section.settings.about_url | default: '/pages/about'
+              assign guide_url = section.settings.guide_url | default: '/pages/guide'
+              assign faq_url = section.settings.faq_url | default: '/pages/faq'
+              assign contact_url = section.settings.contact_url | default: '/pages/contact'
+            %}
+            <li class="menu-drawer__list-item" style="--menu-drawer-animation-index: 1;">
+              <a href="{{ about_url }}" class="menu-drawer__menu-item menu-drawer__menu-item--mainlist menu-drawer__animated-element">
+                <span class="menu-drawer__menu-item-text wrap-text">〇〇について</span>
+              </a>
+            </li>
+            <li class="menu-drawer__list-item" style="--menu-drawer-animation-index: 2;">
+              <a href="{{ guide_url }}" class="menu-drawer__menu-item menu-drawer__menu-item--mainlist menu-drawer__animated-element">
+                <span class="menu-drawer__menu-item-text wrap-text">お買い物ガイド</span>
+              </a>
+            </li>
+            <li class="menu-drawer__list-item" style="--menu-drawer-animation-index: 3;">
+              <a href="{{ faq_url }}" class="menu-drawer__menu-item menu-drawer__menu-item--mainlist menu-drawer__animated-element">
+                <span class="menu-drawer__menu-item-text wrap-text">よくあるご質問</span>
+              </a>
+            </li>
+            <li class="menu-drawer__list-item" style="--menu-drawer-animation-index: 4;">
+              <a href="{{ contact_url }}" class="menu-drawer__menu-item menu-drawer__menu-item--mainlist menu-drawer__animated-element">
+                <span class="menu-drawer__menu-item-text wrap-text">お問い合わせ</span>
+              </a>
+            </li>
+          {% elsif linklist.levels < 3 %}
           {%- comment -%}
             Handle menus with fewer than 3 levels of links
           {%- endcomment -%}
-          {% if linklist.levels < 3 %}
             {% assign first_accordion_open = false %}
             {% assign animation_index = 0 %}
             {%- for link in linklist.links -%}
