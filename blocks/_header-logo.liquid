@@ -58,14 +58,26 @@
     {% endif %}
     data-testid="header-logo"
   >
-    {% render 'image',
-      image: settings.logo,
-      class: 'header-logo__image',
-      height: settings.logo_height,
-      alt_text_fallback: alt_text_fallback,
-      text_fallback: logo_text_fallback,
-      style: logo_style
-    %}
+    {% if section.settings.nadeshiko_header and settings.logo == blank %}
+      <img
+        src="{{ 'nadeshiko-logo.png' | asset_url }}"
+        class="header-logo__image header-logo__image--nadeshiko"
+        width="900"
+        height="363"
+        alt="Nadeshiko Protein"
+        loading="eager"
+        fetchpriority="high"
+      >
+    {% else %}
+      {% render 'image',
+        image: settings.logo,
+        class: 'header-logo__image',
+        height: settings.logo_height,
+        alt_text_fallback: alt_text_fallback,
+        text_fallback: logo_text_fallback,
+        style: logo_style
+      %}
+    {% endif %}
   </span>
 
   {% if use_inverse_logo %}
@@ -131,6 +143,15 @@
     @media screen and (min-width: 750px) {
       height: var(--header-logo-image-height);
       width: var(--header-logo-image-width);
+    }
+  }
+
+  .header-logo__image--nadeshiko {
+    width: 132px;
+    height: auto;
+
+    @media screen and (min-width: 750px) {
+      width: clamp(172px, 14vw, 210px);
     }
   }
 
