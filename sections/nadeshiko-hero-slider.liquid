@@ -1,0 +1,358 @@
+{% liquid
+  assign slide_count = section.blocks.size
+%}
+
+<nadeshiko-hero-slider
+  id="NadeshikoHeroSlider-{{ section.id }}"
+  class="nadeshiko-hero-slider"
+  data-autoplay="{{ section.settings.autoplay }}"
+  data-interval="{{ section.settings.autoplay_speed | times: 1000 }}"
+  style="--desktop-ratio: {{ section.settings.desktop_ratio }}; --mobile-ratio: {{ section.settings.mobile_ratio }};"
+>
+  <div class="nadeshiko-hero-slider__viewport">
+    <div class="nadeshiko-hero-slider__track" data-slider-track>
+      {% for block in section.blocks %}
+        {% liquid
+          case block.settings.fallback_image
+            when 'slide_2'
+              assign fallback_image = 'nadeshiko-slide-2.jpg'
+            when 'slide_3'
+              assign fallback_image = 'nadeshiko-slide-3.jpg'
+            else
+              assign fallback_image = 'nadeshiko-slide-1.jpg'
+          endcase
+
+          assign image_alt = block.settings.alt_text | default: shop.name
+          if forloop.first
+            assign image_loading = 'eager'
+            assign image_priority = 'high'
+          else
+            assign image_loading = 'lazy'
+            assign image_priority = 'auto'
+          endif
+        %}
+
+        <div
+          class="nadeshiko-hero-slider__slide"
+          data-slider-slide
+          data-slide-index="{{ forloop.index0 }}"
+          aria-hidden="{% if forloop.first %}false{% else %}true{% endif %}"
+          {{ block.shopify_attributes }}
+        >
+          {% if block.settings.link != blank %}<a href="{{ block.settings.link }}" class="nadeshiko-hero-slider__link">{% endif %}
+            <picture>
+              {% if block.settings.mobile_image != blank %}
+                <source
+                  media="(max-width: 749px)"
+                  srcset="
+                    {{ block.settings.mobile_image | image_url: width: 600 }} 600w,
+                    {{ block.settings.mobile_image | image_url: width: 900 }} 900w,
+                    {{ block.settings.mobile_image | image_url: width: 1200 }} 1200w
+                  "
+                  sizes="100vw"
+                >
+              {% endif %}
+
+              {% if block.settings.desktop_image != blank %}
+                {{
+                  block.settings.desktop_image
+                  | image_url: width: 2400
+                  | image_tag:
+                    widths: '750, 1100, 1500, 2000, 2400',
+                    sizes: '100vw',
+                    loading: image_loading,
+                    fetchpriority: image_priority,
+                    alt: image_alt
+                }}
+              {% else %}
+                <img
+                  src="{{ fallback_image | asset_url }}"
+                  width="2400"
+                  height="1600"
+                  loading="{{ image_loading }}"
+                  fetchpriority="{{ image_priority }}"
+                  alt="{{ image_alt | escape }}"
+                >
+              {% endif %}
+            </picture>
+          {% if block.settings.link != blank %}</a>{% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  {% if slide_count > 1 %}
+    <div class="nadeshiko-hero-slider__dots" aria-label="スライドを選択">
+      {% for block in section.blocks %}
+        <button
+          type="button"
+          class="nadeshiko-hero-slider__dot{% if forloop.first %} is-active{% endif %}"
+          data-slider-dot
+          data-slide-index="{{ forloop.index0 }}"
+          aria-label="スライド{{ forloop.index }}を表示"
+          aria-current="{% if forloop.first %}true{% else %}false{% endif %}"
+        ></button>
+      {% endfor %}
+    </div>
+  {% endif %}
+</nadeshiko-hero-slider>
+
+{% stylesheet %}
+  .nadeshiko-hero-slider {
+    display: block;
+    width: 100%;
+    background: #fff;
+  }
+
+  .nadeshiko-hero-slider__viewport {
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .nadeshiko-hero-slider__track {
+    display: flex;
+    width: 100%;
+    transition: transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: transform;
+  }
+
+  .nadeshiko-hero-slider__slide {
+    flex: 0 0 100%;
+    min-width: 0;
+    aspect-ratio: var(--desktop-ratio, 3 / 2);
+    overflow: hidden;
+  }
+
+  .nadeshiko-hero-slider__link,
+  .nadeshiko-hero-slider picture,
+  .nadeshiko-hero-slider img {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .nadeshiko-hero-slider img {
+    object-fit: cover;
+    object-position: center;
+  }
+
+  .nadeshiko-hero-slider__dots {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    min-height: 42px;
+    padding: 12px 20px 14px;
+  }
+
+  .nadeshiko-hero-slider__dot {
+    width: 7px;
+    height: 7px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: #d2d2d2;
+    cursor: pointer;
+    transition: background-color 180ms ease, transform 180ms ease;
+  }
+
+  .nadeshiko-hero-slider__dot.is-active {
+    background: #414040;
+    transform: scale(1.15);
+  }
+
+  .nadeshiko-hero-slider__dot:focus-visible {
+    outline: 2px solid #414040;
+    outline-offset: 3px;
+  }
+
+  @media screen and (max-width: 749px) {
+    .nadeshiko-hero-slider__slide {
+      aspect-ratio: var(--mobile-ratio, 4 / 5);
+    }
+
+    .nadeshiko-hero-slider__dots {
+      min-height: 36px;
+      padding-block: 10px 12px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .nadeshiko-hero-slider__track {
+      transition: none;
+    }
+  }
+{% endstylesheet %}
+
+<script>
+  if (!customElements.get('nadeshiko-hero-slider')) {
+    customElements.define(
+      'nadeshiko-hero-slider',
+      class extends HTMLElement {
+        connectedCallback() {
+          this.track = this.querySelector('[data-slider-track]');
+          this.slides = [...this.querySelectorAll('[data-slider-slide]')];
+          this.dots = [...this.querySelectorAll('[data-slider-dot]')];
+          this.index = 0;
+          this.timer = null;
+          this.startX = null;
+
+          this.dots.forEach((dot) => dot.addEventListener('click', () => this.goTo(Number(dot.dataset.slideIndex))));
+          this.addEventListener('pointerdown', (event) => { this.startX = event.clientX; });
+          this.addEventListener('pointerup', (event) => this.handleSwipe(event));
+          this.addEventListener('mouseenter', () => this.stopAutoplay());
+          this.addEventListener('mouseleave', () => this.startAutoplay());
+          this.addEventListener('focusin', () => this.stopAutoplay());
+          this.addEventListener('focusout', () => this.startAutoplay());
+          this.addEventListener('shopify:block:select', (event) => {
+            const slide = event.target.closest('[data-slide-index]');
+            if (slide) this.goTo(Number(slide.dataset.slideIndex));
+          });
+
+          this.startAutoplay();
+        }
+
+        disconnectedCallback() {
+          this.stopAutoplay();
+        }
+
+        goTo(index) {
+          if (!this.track || this.slides.length === 0) return;
+          this.index = (index + this.slides.length) % this.slides.length;
+          this.track.style.transform = `translate3d(-${this.index * 100}%, 0, 0)`;
+
+          this.slides.forEach((slide, slideIndex) => {
+            slide.setAttribute('aria-hidden', String(slideIndex !== this.index));
+          });
+
+          this.dots.forEach((dot, dotIndex) => {
+            const active = dotIndex === this.index;
+            dot.classList.toggle('is-active', active);
+            dot.setAttribute('aria-current', String(active));
+          });
+        }
+
+        handleSwipe(event) {
+          if (this.startX === null) return;
+          const distance = event.clientX - this.startX;
+          this.startX = null;
+          if (Math.abs(distance) < 45) return;
+          this.goTo(this.index + (distance < 0 ? 1 : -1));
+        }
+
+        startAutoplay() {
+          this.stopAutoplay();
+          if (this.dataset.autoplay !== 'true' || this.slides.length < 2) return;
+          if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+          const interval = Number(this.dataset.interval) || 5000;
+          this.timer = window.setInterval(() => this.goTo(this.index + 1), interval);
+        }
+
+        stopAutoplay() {
+          if (this.timer) window.clearInterval(this.timer);
+          this.timer = null;
+        }
+      }
+    );
+  }
+</script>
+
+{% schema %}
+{
+  "name": "Nadeshiko画像スライダー",
+  "tag": "section",
+  "class": "nadeshiko-slider-section",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "自動再生する",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "autoplay_speed",
+      "label": "切り替え間隔",
+      "min": 3,
+      "max": 9,
+      "step": 1,
+      "unit": "秒",
+      "default": 5,
+      "visible_if": "{{ section.settings.autoplay }}"
+    },
+    {
+      "type": "select",
+      "id": "desktop_ratio",
+      "label": "PC画像の比率",
+      "options": [
+        { "value": "3 / 2", "label": "3:2（元画像）" },
+        { "value": "16 / 9", "label": "16:9" },
+        { "value": "2 / 1", "label": "2:1（横長）" }
+      ],
+      "default": "3 / 2"
+    },
+    {
+      "type": "select",
+      "id": "mobile_ratio",
+      "label": "SP画像の比率",
+      "options": [
+        { "value": "4 / 5", "label": "4:5" },
+        { "value": "3 / 4", "label": "3:4" },
+        { "value": "9 / 16", "label": "9:16（縦長）" }
+      ],
+      "default": "4 / 5"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "slide",
+      "name": "スライド",
+      "settings": [
+        {
+          "type": "select",
+          "id": "fallback_image",
+          "label": "初期画像",
+          "options": [
+            { "value": "slide_1", "label": "女性とシェイカー" },
+            { "value": "slide_2", "label": "プロテインを混ぜる手元" },
+            { "value": "slide_3", "label": "果物とプロテイン" }
+          ],
+          "default": "slide_1"
+        },
+        {
+          "type": "image_picker",
+          "id": "desktop_image",
+          "label": "PC画像（選択すると初期画像より優先）"
+        },
+        {
+          "type": "image_picker",
+          "id": "mobile_image",
+          "label": "SP画像（未設定時はPC画像を使用）"
+        },
+        {
+          "type": "text",
+          "id": "alt_text",
+          "label": "画像の説明"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "リンク先"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 10,
+  "presets": [
+    {
+      "name": "Nadeshiko画像スライダー",
+      "blocks": [
+        { "type": "slide", "settings": { "fallback_image": "slide_1" } },
+        { "type": "slide", "settings": { "fallback_image": "slide_2" } },
+        { "type": "slide", "settings": { "fallback_image": "slide_3" } }
+      ]
+    }
+  ]
+}
+{% endschema %}
