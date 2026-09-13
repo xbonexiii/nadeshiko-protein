@@ -100,6 +100,7 @@
     {% render 'skip-to-content-link', href: product_href, text: 'accessibility.skip_to_product_info' %}
   {% endif %}
   <product-component
+    id="NadeshikoProductGrid-{{ section_id }}"
     class="{{ product_grid_class }}"
     data-product-grid-content
     {% # theme-check-disable UnknownFilter %}
@@ -182,14 +183,11 @@
       grid-column: 1 / -1;
     }
 
-    .product-details > .group-block > .group-block-content > :has(.text-block--text_xrnftG) {
+    .product-details > .group-block > .group-block-content > :nth-child(3) {
       order: 2;
     }
 
-    .product-details > .group-block > .group-block-content > :is(
-        .text-block--text_aEtTtq,
-        :has(.text-block--text_aEtTtq)
-      ) {
+    .product-details > .group-block > .group-block-content > :nth-child(2) {
       order: 0;
       grid-column: 1 / -1;
       width: min(100%, 750px);
@@ -203,7 +201,7 @@
       padding-inline: 0;
     }
 
-    .product-details > .group-block > .group-block-content > :has(.buy-buttons-block--buy_buttons_eYQEYi) {
+    .product-details > .group-block > .group-block-content > :nth-child(4) {
       order: 3;
       grid-column: 1;
       width: 100%;
@@ -235,10 +233,7 @@
       margin-inline: auto;
       gap: 28px 48px;
 
-      .product-details > .group-block > .group-block-content > :is(
-          .text-block--text_aEtTtq,
-          :has(.text-block--text_aEtTtq)
-        ) {
+      .product-details > .group-block > .group-block-content > :nth-child(2) {
         grid-column: 1 / -1;
         grid-row: 1;
         width: min(100%, 750px);
@@ -253,7 +248,7 @@
         }
       }
 
-      .product-details > .group-block > .group-block-content > :has(.text-block--text_xrnftG) {
+      .product-details > .group-block > .group-block-content > :nth-child(3) {
         grid-column: 2;
         grid-row: 2;
         width: 100%;
@@ -265,7 +260,7 @@
         grid-row: 2 / 4;
       }
 
-      .product-details > .group-block > .group-block-content > :has(.buy-buttons-block--buy_buttons_eYQEYi) {
+      .product-details > .group-block > .group-block-content > :nth-child(4) {
         grid-column: 2;
         grid-row: 3;
         margin: 0;
