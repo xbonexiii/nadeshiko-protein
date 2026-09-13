@@ -239,6 +239,12 @@
         width: min(100%, 750px);
         justify-self: center;
 
+        p:has(> img) {
+          width: 100%;
+          max-width: none;
+          margin: 0;
+        }
+
         img {
           display: block;
           width: auto;
