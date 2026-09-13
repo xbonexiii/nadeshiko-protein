@@ -67,6 +67,11 @@
     endif
   endif
 
+  if settings.nadeshiko_stacked_layout
+    assign product_grid_class = product_grid_class | append: ' product-information__grid--nadeshiko-stacked'
+    assign render_order = 'product-details,media'
+  endif
+
   # Determine content width
   case settings.content_width
     when 'content-center-aligned'
@@ -151,6 +156,45 @@
     height: 100%;
   }
 
+  /* Nadeshiko product page: header/details, description, media, then purchase controls. */
+  .product-information__grid--nadeshiko-stacked {
+    display: flex;
+    flex-direction: column;
+    grid-column: 1 / -1;
+    gap: clamp(24px, 4vw, 56px);
+
+    .product-details,
+    .product-details > .group-block,
+    .product-details > .group-block > .group-block-content {
+      display: contents;
+    }
+
+    .product-details > .group-block > .group-block__media-wrapper {
+      display: none;
+    }
+
+    .product-details > .group-block > .group-block-content > * {
+      order: 3;
+      width: min(100%, 960px);
+      margin-inline: auto;
+    }
+
+    .product-details > .group-block > .group-block-content > .group-block {
+      order: 0;
+    }
+
+    .product-details > .group-block > .group-block-content > .text-block--text_aEtTtq {
+      order: 1;
+    }
+
+    .product-information__media {
+      order: 2;
+      width: 100%;
+      min-width: 0;
+      padding-inline: 0;
+    }
+  }
+
   /* Mobile styles */
   @media screen and (max-width: 749px) {
     .product-information__media {
@@ -166,6 +210,10 @@
   @media screen and (min-width: 750px) {
     .product-information__grid {
       grid-column: 2;
+    }
+
+    .product-information__grid--nadeshiko-stacked {
+      grid-column: 1 / -1;
     }
 
     /* Position when there is no media */

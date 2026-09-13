@@ -6,7 +6,8 @@
  * or related systems. Please exercise caution as any changes
  * made to this file may be overwritten.
  * ------------------------------------------------------------
- */{
+ */
+{
   "sections": {
     "main": {
       "type": "product-information",
@@ -34,10 +35,11 @@
           "type": "_product-media-gallery",
           "static": true,
           "settings": {
-            "media_presentation": "grid",
+            "media_presentation": "carousel",
             "media_columns": "two",
             "image_gap": 4,
             "large_first_image": false,
+            "icons_style": "arrow",
             "slideshow_controls_style": "counter",
             "slideshow_mobile_controls_style": "dots",
             "thumbnail_position": "right",
@@ -85,6 +87,32 @@
             "padding-inline-end": 0
           },
           "blocks": {
+            "text_aEtTtq": {
+              "type": "text",
+              "name": "t:names.product_description",
+              "settings": {
+                "text": "{{ closest.product.description }}",
+                "width": "100%",
+                "max_width": "normal",
+                "alignment": "left",
+                "type_preset": "rte",
+                "font": "var(--font-body--family)",
+                "font_size": "1rem",
+                "line_height": "normal",
+                "letter_spacing": "normal",
+                "case": "none",
+                "wrap": "pretty",
+                "text_color": "",
+                "background": false,
+                "background_color": "#00000026",
+                "corner_radius": 0,
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            },
             "group_icgrde": {
               "type": "group",
               "name": "t:names.header",
@@ -116,6 +144,7 @@
                 "border_opacity": 100,
                 "border_color": "",
                 "border_radius": 0,
+                "link": "",
                 "open_in_new_tab": false,
                 "placeholder": "",
                 "padding-block-start": 0,
@@ -272,40 +301,14 @@
                 }
               },
               "block_order": []
-            },
-            "text_aEtTtq": {
-              "type": "text",
-              "name": "t:names.product_description",
-              "settings": {
-                "text": "{{ closest.product.description }}",
-                "width": "100%",
-                "max_width": "normal",
-                "alignment": "left",
-                "type_preset": "rte",
-                "font": "var(--font-body--family)",
-                "font_size": "1rem",
-                "line_height": "normal",
-                "letter_spacing": "normal",
-                "case": "none",
-                "wrap": "pretty",
-                "text_color": "",
-                "background": false,
-                "background_color": "#00000026",
-                "corner_radius": 0,
-                "padding-block-start": 0,
-                "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              },
-              "blocks": {}
             }
           },
           "block_order": [
             "group_icgrde",
+            "text_aEtTtq",
             "divider_VJhene",
             "variant_picker_R3rGDr",
-            "buy_buttons_eYQEYi",
-            "text_aEtTtq"
+            "buy_buttons_eYQEYi"
           ]
         }
       },
@@ -313,7 +316,8 @@
         "disclosures_g9mWze"
       ],
       "settings": {
-        "content_width": "content-center-aligned",
+        "content_width": "content-full-width",
+        "nadeshiko_stacked_layout": true,
         "desktop_media_position": "left",
         "equal_columns": false,
         "limit_details_width": false,
