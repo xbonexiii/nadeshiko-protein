@@ -156,10 +156,10 @@
     height: 100%;
   }
 
-  /* Nadeshiko product page: header/details, description, media, then purchase controls. */
+  /* Nadeshiko product page: full-width heading and description, then media beside purchase controls. */
   .product-information__grid--nadeshiko-stacked {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
     grid-column: 1 / -1;
     gap: clamp(24px, 4vw, 56px);
 
@@ -174,24 +174,36 @@
     }
 
     .product-details > .group-block > .group-block-content > * {
-      order: 3;
       width: min(100%, 960px);
       margin-inline: auto;
     }
 
     .product-details > .group-block > .group-block-content > .group-block {
+      grid-column: 1 / -1;
+    }
+
+    .product-details > .group-block > .group-block-content > .group-block:first-of-type {
       order: 0;
     }
 
     .product-details > .group-block > .group-block-content > .text-block--text_aEtTtq {
       order: 1;
+      grid-column: 1 / -1;
+      width: min(100%, 800px);
     }
 
     .product-information__media {
       order: 2;
+      grid-column: 1;
       width: 100%;
       min-width: 0;
       padding-inline: 0;
+    }
+
+    .product-details > .group-block > .group-block-content > .group-block:last-child {
+      order: 3;
+      grid-column: 1;
+      width: 100%;
     }
   }
 
@@ -214,6 +226,16 @@
 
     .product-information__grid--nadeshiko-stacked {
       grid-column: 1 / -1;
+      grid-template-columns: minmax(0, 3fr) minmax(300px, 2fr);
+      align-items: start;
+
+      .product-information__media {
+        grid-column: 1;
+      }
+
+      .product-details > .group-block > .group-block-content > .group-block:last-child {
+        grid-column: 2;
+      }
     }
 
     /* Position when there is no media */
@@ -366,6 +388,12 @@
   @media screen and (min-width: 1600px) {
     .product-information__grid--limit-details .product-details > .group-block {
       --details-max-width: 32rem;
+    }
+  }
+
+  @media screen and (min-width: 750px) {
+    .product-information__grid.product-information__grid--nadeshiko-stacked {
+      grid-template-columns: minmax(0, 3fr) minmax(300px, 2fr);
     }
   }
 
