@@ -1268,34 +1268,34 @@ summary:hover {
 }
 
 /* Nadeshiko legal notice */
-.shopify-policy__container {
+body .shopify-policy__container {
   max-width: 800px;
   margin-inline: auto;
   padding-inline: 24px;
 }
 
-.shopify-policy__title h1 {
+body .shopify-policy__title h1 {
   font-size: 38px;
   line-height: 1.3;
 }
 
-.shopify-policy__body h2 {
+body .shopify-policy__body h2 {
   font-size: 26px;
   line-height: 1.4;
   margin-block: 32px 12px;
 }
 
 @media screen and (max-width: 749px) {
-  .shopify-policy__container {
+  body .shopify-policy__container {
     max-width: 100%;
     padding-inline: 20px;
   }
 
-  .shopify-policy__title h1 {
+  body .shopify-policy__title h1 {
     font-size: 28px;
   }
 
-  .shopify-policy__body h2 {
+  body .shopify-policy__body h2 {
     font-size: 21px;
     margin-block: 28px 10px;
   }
