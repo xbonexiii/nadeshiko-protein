@@ -45,11 +45,22 @@ export class MediaGallery extends Component {
       .then(({ detail }) => {
         if (!detail?.html) return;
 
-        const { html } = detail;
-        const newMediaGallery = html.querySelector('media-gallery');
+        const { html, productId } = detail;
+        const productComponent = productId
+          ? html
+              .querySelector(`variant-picker[data-product-id="${productId}"][data-template-product-match="true"]`)
+              ?.closest('product-component')
+          : null;
+        const newMediaGallery = productComponent?.querySelector('media-gallery') ?? html.querySelector('media-gallery');
         if (!newMediaGallery) return;
 
+        const quickAddMediaContainer = this.closest('quick-add-dialog .product-information__media');
         this.replaceWith(newMediaGallery);
+
+        // The quick-add media column is the scroll container, so replacing the gallery alone
+        // preserves its previous scroll position. Return it to the first item, which the server
+        // renders as the selected variant's featured media.
+        quickAddMediaContainer?.scrollTo({ top: 0, behavior: 'instant' });
       })
       .catch((error) => {
         if (error?.name !== 'AbortError') console.warn('[media-gallery] Event promise rejected:', error);
