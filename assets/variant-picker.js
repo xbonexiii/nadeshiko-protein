@@ -67,6 +67,7 @@ export default class VariantPicker extends Component {
     if (!selectedOption) return;
 
     this.updateSelectedOption(event.target);
+    this.#selectQuickAddMedia(selectedOption);
 
     const isOnProductPage =
       this.dataset.templateProductMatch === 'true' &&
@@ -111,6 +112,22 @@ export default class VariantPicker extends Component {
       yieldToMainThread().then(() => {
         history.replaceState({}, '', url.toString());
       });
+    }
+  }
+
+  /**
+   * Immediately shows the selected variant's media in the quick-add modal.
+   * The server-rendered gallery will still replace it once the variant request completes.
+   * @param {HTMLElement} selectedOption - The selected radio input or option element.
+   */
+  #selectQuickAddMedia(selectedOption) {
+    const mediaId = selectedOption.dataset.optionMediaId;
+    const quickAddDialog = this.closest('quick-add-dialog');
+    if (!mediaId || !quickAddDialog) return;
+
+    const mediaGallery = quickAddDialog.querySelector('media-gallery');
+    if (mediaGallery && 'selectMedia' in mediaGallery && typeof mediaGallery.selectMedia === 'function') {
+      mediaGallery.selectMedia(mediaId);
     }
   }
 

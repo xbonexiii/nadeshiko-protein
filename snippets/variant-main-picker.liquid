@@ -125,6 +125,9 @@
                   {% if product_option_value.variant.id %}
                     data-variant-id="{{ product_option_value.variant.id }}"
                   {% endif %}
+                  {% if product_option_value.variant.featured_media.id %}
+                    data-option-media-id="{{ product_option_value.variant.featured_media.id }}"
+                  {% endif %}
                   {% if product_option_value.selected %}
                     data-current-checked="true"
                     checked
@@ -212,6 +215,9 @@
                     data-option-value-id="{{ product_option_value.id }}"
                     data-variant-id="{{ product_option_value.variant.id }}"
                     data-connected-product-url="{{ product_option_value.product_url }}"
+                    {% if product_option_value.variant.featured_media.id %}
+                      data-option-media-id="{{ product_option_value.variant.featured_media.id }}"
+                    {% endif %}
                     {% if product_option_value.selected %}
                       selected="selected"
                     {% endif %}

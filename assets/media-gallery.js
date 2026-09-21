@@ -45,7 +45,7 @@ export class MediaGallery extends Component {
       .then(({ detail }) => {
         if (!detail?.html) return;
 
-        const { html, productId } = detail;
+        const { html, productId, resource } = detail;
         const productComponent = productId
           ? html
               .querySelector(`variant-picker[data-product-id="${productId}"][data-template-product-match="true"]`)
@@ -53,6 +53,11 @@ export class MediaGallery extends Component {
           : null;
         const newMediaGallery = productComponent?.querySelector('media-gallery') ?? html.querySelector('media-gallery');
         if (!newMediaGallery) return;
+
+        const selectedMediaId = resource?.featured_media?.id;
+        if (selectedMediaId) {
+          this.#promoteMedia(newMediaGallery, String(selectedMediaId));
+        }
 
         const quickAddMediaContainer = this.closest('quick-add-dialog .product-information__media');
         this.replaceWith(newMediaGallery);
@@ -66,6 +71,45 @@ export class MediaGallery extends Component {
         if (error?.name !== 'AbortError') console.warn('[media-gallery] Event promise rejected:', error);
       });
   };
+
+  /**
+   * Selects a product media item in both carousel and grid presentations.
+   * Grid media is moved to the first position because quick add displays the grid vertically.
+   * @param {string} mediaId - Shopify media ID.
+   */
+  selectMedia(mediaId) {
+    const mediaSelector = `.product-media[data-media-id="${mediaId}"]`;
+    const slides = this.slideshow?.slides;
+    const slideIndex = slides?.findIndex((slide) => slide.querySelector(mediaSelector));
+
+    if (slideIndex != null && slideIndex >= 0) {
+      this.slideshow?.select(slideIndex, undefined, { animate: false });
+    }
+
+    this.#promoteMedia(this, mediaId);
+  }
+
+  /**
+   * Moves a media item to the first position before a server-rendered gallery is connected.
+   * @param {Element} gallery - Media gallery element to update.
+   * @param {string} mediaId - Shopify media ID.
+   */
+  #promoteMedia(gallery, mediaId) {
+    const mediaSelector = `.product-media[data-media-id="${mediaId}"]`;
+    const collections = [gallery.querySelector('slideshow-slides'), gallery.querySelector('.media-gallery__grid')];
+
+    for (const collection of collections) {
+      const mediaItem = Array.from(collection?.children ?? []).find((item) => item.querySelector(mediaSelector));
+      if (!mediaItem || collection?.firstElementChild === mediaItem) continue;
+
+      if (mediaItem.matches('slideshow-slide')) {
+        collection?.firstElementChild?.setAttribute('aria-hidden', 'true');
+        mediaItem.setAttribute('aria-hidden', 'false');
+      }
+
+      collection?.prepend(mediaItem);
+    }
+  }
 
   /**
    * Handles the 'zoom-media:selected' event.
