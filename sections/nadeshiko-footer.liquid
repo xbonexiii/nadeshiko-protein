@@ -2,8 +2,10 @@
   class="nadeshiko-footer"
   style="--nadeshiko-footer-bg: {{ section.settings.background_color }}; --nadeshiko-footer-text: {{ section.settings.text_color }};"
 >
-  <div class="nadeshiko-footer__inner page-width">
-    <h2 class="nadeshiko-footer__title">{{ section.settings.heading | escape }}</h2>
+  <div class="nadeshiko-footer__inner">
+    {% if section.settings.heading != blank %}
+      <h2 class="nadeshiko-footer__title">{{ section.settings.heading | escape }}</h2>
+    {% endif %}
 
     <div class="nadeshiko-footer__grid">
       <div class="nadeshiko-footer__column">
@@ -75,7 +77,12 @@
   }
 
   .nadeshiko-footer__inner {
+    width: 100%;
+    max-width: 1120px;
+    margin-inline: auto;
+    padding-inline: 32px;
     padding-block: 72px 28px;
+    box-sizing: border-box;
   }
 
   .nadeshiko-footer__title {
@@ -183,6 +190,7 @@
 
   @media screen and (max-width: 749px) {
     .nadeshiko-footer__inner {
+      padding-inline: 20px;
       padding-block: 52px 24px;
     }
 
@@ -235,7 +243,7 @@
       "type": "text",
       "id": "heading",
       "label": "見出し",
-      "default": "nadeshikoプロテインをご検討中の方へ"
+      "default": ""
     },
     {
       "type": "text",
