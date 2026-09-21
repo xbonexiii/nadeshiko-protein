@@ -15,7 +15,9 @@
           <li><a href="/pages/guide">お買い物ガイド</a></li>
           <li><a href="/pages/faq">よくあるご質問</a></li>
           <li><a href="/pages/contact">お問い合わせ</a></li>
-          <li><a href="{{ section.settings.instagram_url | default: 'https://www.instagram.com/' }}" target="_blank" rel="noopener">公式Instagram</a></li>
+          {% if section.settings.instagram_url != blank %}
+            <li><a href="{{ section.settings.instagram_url }}" target="_blank" rel="noopener">公式Instagram</a></li>
+          {% endif %}
         </ul>
       </div>
 
@@ -43,7 +45,9 @@
         <span class="visually-hidden">お支払い方法</span>
         <ul class="nadeshiko-footer__payment-list list-unstyled" role="list">
           {% for type in shop.enabled_payment_types %}
-            <li>{{ type | payment_type_svg_tag: class: 'icon icon--full-color' }}</li>
+            {% unless type == 'paypal' or type == 'paypal_express' %}
+              <li>{{ type | payment_type_svg_tag: class: 'icon icon--full-color' }}</li>
+            {% endunless %}
           {% endfor %}
         </ul>
       </div>
