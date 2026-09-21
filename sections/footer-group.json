@@ -15,7 +15,6 @@
       "type": "nadeshiko-concept-video",
       "name": "コンセプトムービー",
       "settings": {
-        "video": "",
         "eyebrow": "NADESHIKO PROTEIN",
         "heading": "明日もっといい私になる",
         "overlay_opacity": 30,
