@@ -1,0 +1,270 @@
+<section
+  class="nadeshiko-footer"
+  style="--nadeshiko-footer-bg: {{ section.settings.background_color }}; --nadeshiko-footer-text: {{ section.settings.text_color }};"
+>
+  <div class="nadeshiko-footer__inner page-width">
+    <h2 class="nadeshiko-footer__title">{{ section.settings.heading | escape }}</h2>
+
+    <div class="nadeshiko-footer__grid">
+      <div class="nadeshiko-footer__column">
+        <h3>{{ section.settings.guide_heading | escape }}</h3>
+        <ul class="nadeshiko-footer__links list-unstyled">
+          <li><a href="/pages/about">nadeshikoプロテインについて</a></li>
+          <li><a href="/pages/guide">お買い物ガイド</a></li>
+          <li><a href="/pages/faq">よくあるご質問</a></li>
+          <li><a href="/pages/contact">お問い合わせ</a></li>
+          <li><a href="{{ section.settings.instagram_url | default: 'https://www.instagram.com/' }}" target="_blank" rel="noopener">公式Instagram</a></li>
+        </ul>
+      </div>
+
+      <div class="nadeshiko-footer__column">
+        <h3>返品・返金について</h3>
+        <p>商品に初期不良や誤配送があった場合は、商品到着後30日以内にご連絡ください。</p>
+        <a class="nadeshiko-footer__more" href="{{ shop.refund_policy.url | default: '/policies/refund-policy' }}">詳しくはこちら</a>
+      </div>
+
+      <div class="nadeshiko-footer__column">
+        <h3>お届けについて</h3>
+        <p>通常、ご注文確認後3営業日以内に発送いたします。<br>土日祝・長期休業を除きます。</p>
+        <a class="nadeshiko-footer__more" href="{{ shop.shipping_policy.url | default: '/policies/shipping-policy' }}">配送ポリシーはこちら</a>
+      </div>
+
+      <div class="nadeshiko-footer__column">
+        <h3>お問い合わせ</h3>
+        <p>メール：24時間受付<br>平日10:00〜17:00<br>土日・祝日を除きます。</p>
+        <a class="nadeshiko-footer__more" href="/pages/contact">お問い合わせフォーム</a>
+      </div>
+    </div>
+
+    {% if shop.enabled_payment_types.size > 0 %}
+      <div class="nadeshiko-footer__payments">
+        <span class="visually-hidden">お支払い方法</span>
+        <ul class="nadeshiko-footer__payment-list list-unstyled" role="list">
+          {% for type in shop.enabled_payment_types %}
+            <li>{{ type | payment_type_svg_tag: class: 'icon icon--full-color' }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+
+    <div class="nadeshiko-footer__bottom">
+      <p>&copy; {{ 'now' | date: '%Y' }} {{ shop.name | escape }}</p>
+
+      {% if shop.policies.size > 0 %}
+        <ul class="nadeshiko-footer__policy-list list-unstyled" role="list">
+          {% for policy in shop.policies %}
+            {% if policy != blank %}
+              <li><a href="{{ policy.url }}">{{ policy.title | escape }}</a></li>
+            {% endif %}
+          {% endfor %}
+        </ul>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .nadeshiko-footer {
+    background: var(--nadeshiko-footer-bg);
+    color: var(--nadeshiko-footer-text);
+  }
+
+  .nadeshiko-footer a {
+    color: inherit;
+    text-underline-offset: 0.25em;
+  }
+
+  .nadeshiko-footer__inner {
+    padding-block: 72px 28px;
+  }
+
+  .nadeshiko-footer__title {
+    margin: 0 0 42px;
+    color: inherit;
+    font-size: clamp(22px, 2.5vw, 34px);
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    text-align: center;
+  }
+
+  .nadeshiko-footer__grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 46px;
+  }
+
+  .nadeshiko-footer__column h3 {
+    margin: 0 0 18px;
+    color: inherit;
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+  }
+
+  .nadeshiko-footer__column p,
+  .nadeshiko-footer__links {
+    margin: 0;
+    font-size: 14px;
+    line-height: 2;
+  }
+
+  .nadeshiko-footer__links li + li {
+    margin-top: 2px;
+  }
+
+  .nadeshiko-footer__links a {
+    text-decoration: none;
+  }
+
+  .nadeshiko-footer__links a:hover,
+  .nadeshiko-footer__more:hover,
+  .nadeshiko-footer__policy-list a:hover {
+    opacity: 0.65;
+  }
+
+  .nadeshiko-footer__more {
+    display: inline-block;
+    margin-top: 16px;
+    font-size: 13px;
+  }
+
+  .nadeshiko-footer__payments {
+    margin-top: 58px;
+    padding-top: 24px;
+    border-top: 1px solid rgb(0 0 0 / 0.12);
+  }
+
+  .nadeshiko-footer__payment-list {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+  }
+
+  .nadeshiko-footer__payment-list li,
+  .nadeshiko-footer__payment-list svg {
+    display: block;
+  }
+
+  .nadeshiko-footer__bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 24px;
+    margin-top: 24px;
+    padding-top: 22px;
+    border-top: 1px solid rgb(0 0 0 / 0.12);
+    font-size: 11px;
+    line-height: 1.8;
+  }
+
+  .nadeshiko-footer__bottom p {
+    flex: 0 0 auto;
+    margin: 0;
+  }
+
+  .nadeshiko-footer__policy-list {
+    display: flex;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 6px 18px;
+    margin: 0;
+    padding: 0;
+  }
+
+  @media screen and (max-width: 989px) {
+    .nadeshiko-footer__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .nadeshiko-footer__inner {
+      padding-block: 52px 24px;
+    }
+
+    .nadeshiko-footer__title {
+      margin-bottom: 34px;
+      font-size: 22px;
+      line-height: 1.55;
+    }
+
+    .nadeshiko-footer__grid {
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+
+    .nadeshiko-footer__column {
+      padding-block: 26px;
+      border-top: 1px solid rgb(0 0 0 / 0.12);
+    }
+
+    .nadeshiko-footer__column:last-child {
+      border-bottom: 1px solid rgb(0 0 0 / 0.12);
+    }
+
+    .nadeshiko-footer__payments {
+      margin-top: 32px;
+      border-top: 0;
+    }
+
+    .nadeshiko-footer__bottom {
+      flex-direction: column-reverse;
+      align-items: center;
+      text-align: center;
+    }
+
+    .nadeshiko-footer__policy-list {
+      justify-content: center;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Nadeshiko フッター",
+  "class": "section-wrapper",
+  "enabled_on": {
+    "groups": ["footer"]
+  },
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "見出し",
+      "default": "nadeshikoプロテインをご検討中の方へ"
+    },
+    {
+      "type": "text",
+      "id": "guide_heading",
+      "label": "リンク欄の見出し",
+      "default": "ご案内"
+    },
+    {
+      "type": "url",
+      "id": "instagram_url",
+      "label": "Instagram URL"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "背景色",
+      "default": "#eeeeec"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "文字色",
+      "default": "#3f3f3f"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Nadeshiko フッター"
+    }
+  ]
+}
+{% endschema %}
