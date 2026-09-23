@@ -1,0 +1,267 @@
+{% stylesheet %}
+  .purchase-panel {
+    display: grid;
+    grid-template-columns: minmax(160px, 0.9fr) minmax(240px, 1.1fr);
+    width: 100%;
+    min-width: 0;
+    background: var(--color-background);
+    color: var(--color-foreground);
+  }
+
+  .purchase-panel__media {
+    min-width: 0;
+    aspect-ratio: 1 / 1;
+    background: var(--color-background-secondary);
+    overflow: hidden;
+  }
+
+  .purchase-panel__image,
+  .purchase-panel__placeholder {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .purchase-panel__content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: var(--gap-md);
+    min-width: 0;
+    padding: clamp(var(--padding-lg), 4vw, var(--padding-3xl));
+  }
+
+  .purchase-panel__title {
+    color: inherit;
+    font-size: var(--font-size--xl);
+    font-weight: var(--font-weight-semibold);
+    line-height: 1.3;
+    text-decoration: none;
+  }
+
+  .purchase-panel__price {
+    display: flex;
+    align-items: baseline;
+    gap: var(--gap-sm);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  .purchase-panel__price s {
+    color: rgb(var(--color-foreground-rgb) / var(--opacity-subdued-text));
+    font-size: var(--font-paragraph-small--size);
+    font-weight: var(--font-weight-normal);
+  }
+
+  .purchase-panel__form-component,
+  .purchase-panel__form-component form {
+    display: block;
+    width: 100%;
+  }
+
+  .purchase-panel__field {
+    display: grid;
+    gap: var(--gap-xs);
+  }
+
+  .purchase-panel__label {
+    font-size: var(--font-paragraph-small--size);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  .purchase-panel__select-wrap {
+    display: grid;
+    align-items: center;
+    position: relative;
+  }
+
+  .purchase-panel__select {
+    grid-area: 1 / 1;
+    width: 100%;
+    min-height: var(--minimum-touch-target);
+    appearance: none;
+    color: inherit;
+    background: var(--color-background);
+    border: var(--style-border-width-inputs) solid var(--color-input-border);
+    border-radius: var(--style-border-radius-inputs);
+    padding: var(--padding-sm) calc(var(--padding-xl) + 20px) var(--padding-sm) var(--padding-md);
+    font: inherit;
+    cursor: pointer;
+  }
+
+  .purchase-panel__caret {
+    grid-area: 1 / 1;
+    justify-self: end;
+    margin-inline-end: var(--padding-md);
+    pointer-events: none;
+  }
+
+  .purchase-panel__actions {
+    display: grid;
+    grid-template-columns: auto minmax(150px, 1fr);
+    align-items: stretch;
+    gap: var(--gap-sm);
+    margin-top: var(--gap-md);
+  }
+
+  .purchase-panel__quantity-selector {
+    display: grid;
+    grid-template-columns: var(--minimum-touch-target) 44px var(--minimum-touch-target);
+    align-items: center;
+    height: 100%;
+    min-height: var(--height-buy-buttons);
+    border: var(--style-border-width-inputs) solid var(--color-input-border);
+    border-radius: var(--style-border-radius-inputs);
+    overflow: hidden;
+  }
+
+  .purchase-panel__quantity-button {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    height: 100%;
+    min-height: var(--minimum-touch-target);
+    padding: 0;
+  }
+
+  .purchase-panel__quantity-input {
+    width: 100%;
+    min-width: 0;
+    appearance: textfield;
+    color: inherit;
+    background: transparent;
+    border: 0;
+    padding: 0;
+    text-align: center;
+    font: inherit;
+  }
+
+  .purchase-panel__quantity-input::-webkit-inner-spin-button,
+  .purchase-panel__quantity-input::-webkit-outer-spin-button {
+    appearance: none;
+    margin: 0;
+  }
+
+  .purchase-panel__submit {
+    position: relative;
+    width: 100%;
+    min-height: var(--height-buy-buttons);
+    white-space: nowrap;
+  }
+
+  .purchase-panel--sticky {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    gap: var(--gap-md);
+    background: transparent;
+  }
+
+  .purchase-panel--sticky .purchase-panel__media {
+    width: var(--height-buy-buttons);
+    height: var(--height-buy-buttons);
+    border-radius: var(--style-border-radius-buttons-primary);
+  }
+
+  .purchase-panel--sticky .purchase-panel__content {
+    display: grid;
+    grid-template-columns: auto minmax(260px, 1fr);
+    align-items: center;
+    gap: var(--gap-md);
+    padding: 0;
+  }
+
+  .purchase-panel--sticky .purchase-panel__price {
+    white-space: nowrap;
+  }
+
+  .purchase-panel--sticky .purchase-panel__form-component form {
+    display: grid;
+    grid-template-columns: minmax(145px, 0.9fr) minmax(260px, 1.4fr);
+    align-items: end;
+    gap: var(--gap-sm);
+  }
+
+  .purchase-panel--sticky .purchase-panel__actions {
+    margin: 0;
+  }
+
+  @media screen and (max-width: 749px) {
+    .purchase-panel:not(.purchase-panel--sticky) {
+      grid-template-columns: 96px minmax(0, 1fr);
+      align-items: start;
+    }
+
+    .purchase-panel:not(.purchase-panel--sticky) .purchase-panel__content {
+      padding: 0 0 0 var(--padding-md);
+    }
+
+    .purchase-panel:not(.purchase-panel--sticky) .purchase-panel__title {
+      padding-inline-end: var(--padding-2xl);
+      font-size: var(--font-size--md);
+    }
+
+    .purchase-panel:not(.purchase-panel--sticky) .purchase-panel__form-component {
+      grid-column: 1 / -1;
+    }
+
+    .purchase-panel:not(.purchase-panel--sticky) .purchase-panel__field,
+    .purchase-panel:not(.purchase-panel--sticky) .purchase-panel__actions {
+      width: calc(100vw - (2 * var(--padding-xl)));
+      margin-inline-start: calc(-96px - var(--padding-md));
+    }
+
+    .purchase-panel:not(.purchase-panel--sticky) .purchase-panel__actions {
+      margin-top: var(--gap-md);
+    }
+
+    .purchase-panel--sticky {
+      grid-template-columns: 48px minmax(0, 1fr);
+      gap: var(--gap-sm);
+    }
+
+    .purchase-panel--sticky .purchase-panel__media {
+      width: 48px;
+      height: 48px;
+    }
+
+    .purchase-panel--sticky .purchase-panel__content {
+      display: block;
+    }
+
+    .purchase-panel--sticky .purchase-panel__price {
+      display: none;
+    }
+
+    .purchase-panel--sticky .purchase-panel__form-component form {
+      grid-template-columns: minmax(108px, 0.8fr) minmax(180px, 1.2fr);
+    }
+
+    .purchase-panel--sticky .purchase-panel__actions {
+      grid-template-columns: auto minmax(116px, 1fr);
+    }
+
+    .purchase-panel--sticky .purchase-panel__quantity-selector {
+      grid-template-columns: 38px 36px 38px;
+    }
+  }
+
+  @media screen and (max-width: 480px) {
+    .purchase-panel__actions {
+      grid-template-columns: auto minmax(0, 1fr);
+    }
+
+    .purchase-panel--sticky {
+      grid-template-columns: 1fr;
+    }
+
+    .purchase-panel--sticky .purchase-panel__media {
+      display: none;
+    }
+
+    .purchase-panel--sticky .purchase-panel__form-component form {
+      grid-template-columns: 1fr;
+      gap: var(--gap-xs);
+    }
+  }
+{% endstylesheet %}

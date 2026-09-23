@@ -123,6 +123,29 @@ export class QuickAddComponent extends Component {
       return;
     }
 
+    const purchaseTemplate = /** @type {HTMLTemplateElement | null} */ (
+      this.parentElement?.querySelector('template[data-quick-purchase-template]') ??
+        this.querySelector('template[data-quick-purchase-template]')
+    );
+    const purchaseShell = purchaseTemplate?.content.firstElementChild;
+
+    if (purchaseShell) {
+      const freshContent = /** @type {Element} */ (purchaseShell.cloneNode(true));
+      const selectedVariantId = this.#getSelectedVariantId();
+      const variantSelect = /** @type {HTMLSelectElement | null} */ (
+        freshContent.querySelector('[data-purchase-variant-select]')
+      );
+
+      if (selectedVariantId && variantSelect?.querySelector(`option[value="${CSS.escape(selectedVariantId)}"]`)) {
+        variantSelect.value = selectedVariantId;
+      }
+
+      const modalContent = document.getElementById('quick-add-modal-content');
+      if (modalContent) modalContent.replaceChildren(freshContent);
+      this.#openQuickAddModal();
+      return;
+    }
+
     // Check if we have cached content for this URL
     let productGrid = this.#cachedContent.get(currentUrl);
 

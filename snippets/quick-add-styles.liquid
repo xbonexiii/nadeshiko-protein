@@ -44,38 +44,31 @@
     display: none;
   }
 
-  product-card:is(:hover, :focus-within) .quick-add__button {
-    opacity: 1;
-
-    &:disabled {
-      opacity: var(--opacity-muted-text);
-    }
-  }
-
   button.quick-add__button {
-    --quick-add-collapsed-width: var(--button-size-md);
+    --quick-add-collapsed-width: max-content;
     --quick-add-icon-width: calc(var(--button-size-md) - 4px);
     --quick-add-expanded-width: max-content;
 
     display: var(--quick-add-mobile-display, none);
     align-items: center;
     justify-content: flex-start;
-    gap: 0;
+    gap: var(--gap-2xs);
     background: linear-gradient(var(--quick-add-background, var(--color-background)) 0 100%) padding-box;
-    padding: 0;
+    padding: 0 var(--padding-md) 0 var(--padding-2xs);
     border-radius: 50px;
     border: 2px solid hsl(0 0% 0% / 0.15);
     height: var(--button-size-md);
-    width: var(--quick-add-collapsed-width);
+    width: auto;
     cursor: pointer;
     opacity: var(--quick-add-mobile-opacity, 0);
     overflow: hidden;
     color: var(--quick-add-foreground, var(--color-foreground));
     pointer-events: all;
     position: absolute;
+    inset-inline-start: var(--quick-add-inset-inline-end);
     inset-inline-end: var(--quick-add-inset-inline-end);
     inset-block-end: var(--quick-add-inset-block-end);
-    max-inline-size: calc(100% - var(--quick-add-inset-inline-end));
+    max-inline-size: none;
     min-inline-size: 0;
     white-space: nowrap;
     backdrop-filter: blur(20px) saturate(180%);
@@ -103,11 +96,11 @@
 
     @media screen and (min-width: 750px) {
       display: var(--quick-add-display, flex);
-      opacity: 0;
+      opacity: 1;
 
       /* Explicit "disabled" rule is needed to beat the `.button:disabled { opacity: 0.5 }` rule in base.css */
       &:disabled {
-        opacity: 0;
+        opacity: var(--opacity-muted-text);
       }
     }
   }
@@ -152,15 +145,8 @@
     --cursor: default;
   }
 
-  @media screen and (min-width: 750px) {
-    .quick-add__button:is(:hover, :focus-visible) {
-      width: var(--quick-add-expanded-width);
-      padding-inline-end: var(--padding-sm);
-    }
-  }
-
   .quick-add__button[data-added='true'] {
-    width: var(--quick-add-collapsed-width);
+    width: auto;
     color: transparent;
   }
 

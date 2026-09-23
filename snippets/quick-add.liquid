@@ -9,7 +9,7 @@
 {% liquid
   assign product_form_id = 'QuickAdd-ProductForm-' | append: product.id | append: '-' | append: block.id
   assign add_to_cart_text = 'actions.add' | t
-  assign choose_options_text = 'actions.choose' | t
+  assign choose_options_text = '味を選んでカートへ'
   # Logic to determine which variant to use (matching swatch selection logic from product-card)
   assign variant = product.selected_or_first_available_variant
 
@@ -143,6 +143,14 @@
     </button>
   {% endif %}
 </quick-add-component>
+
+{% if render_choose %}
+  <template data-quick-purchase-template>
+    <div class="quick-purchase-shell">
+      {% render 'purchase-panel', product: product, section_id: section_id, context: 'quick-add' %}
+    </div>
+  </template>
+{% endif %}
 
 {% render 'add-to-cart-button-styles' %}
 {% render 'checkbox-styles' %}

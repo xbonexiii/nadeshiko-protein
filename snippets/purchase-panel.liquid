@@ -1,0 +1,212 @@
+{%- doc -%}
+  Compact, reusable purchase UI for Quick Add and sticky add-to-cart.
+
+  @param {object} product - Product to purchase.
+  @param {string} section_id - Owning section ID.
+  @param {string} [context] - `quick-add` or `sticky`.
+{%- enddoc -%}
+
+{% liquid
+  assign context = context | default: 'quick-add'
+  assign selected_variant = product.selected_or_first_available_variant
+  assign image_to_show = selected_variant.featured_image | default: product.featured_image
+  assign form_id = 'PurchasePanel-' | append: context | append: '-' | append: section_id | append: '-' | append: product.id
+  assign add_text = 'products.product.add_to_cart' | t
+  assign sold_out_text = 'products.product.sold_out' | t
+  assign selected_cart_quantity = cart | item_count_for_variant: selected_variant.id
+  assign selected_can_add = selected_variant.available
+  if selected_variant.inventory_management == 'shopify' and selected_variant.inventory_policy == 'deny'
+    assign selected_remaining = selected_variant.inventory_quantity | minus: selected_cart_quantity
+    if selected_remaining < selected_variant.quantity_rule.min
+      assign selected_can_add = false
+    endif
+  endif
+%}
+
+<purchase-panel
+  class="purchase-panel purchase-panel--{{ context }}"
+  data-product-title="{{ product.title | escape }}"
+  data-fallback-image="{% if product.featured_image %}{{ product.featured_image | image_url: width: 900 }}{% endif %}"
+  data-variant-id="{{ selected_variant.id }}"
+  data-variant-available="{{ selected_can_add }}"
+>
+  <div class="purchase-panel__media">
+    {% if image_to_show %}
+      {{
+        image_to_show
+        | image_url: width: 900
+        | image_tag:
+          loading: 'lazy',
+          widths: '240, 360, 540, 720, 900',
+          sizes: '(min-width: 750px) 320px, 34vw',
+          class: 'purchase-panel__image',
+          data-purchase-image: ''
+      }}
+    {% else %}
+      {{ 'product-1' | placeholder_svg_tag: 'purchase-panel__image purchase-panel__placeholder' }}
+    {% endif %}
+  </div>
+
+  <div class="purchase-panel__content">
+    {% unless context == 'sticky' %}
+      <a class="purchase-panel__title" href="{{ product.url }}">{{ product.title | escape }}</a>
+    {% endunless %}
+
+    <div class="purchase-panel__price" aria-live="polite">
+      <span data-purchase-price>{{ selected_variant.price | money }}</span>
+      <s
+        data-purchase-compare-price
+        {% unless selected_variant.compare_at_price > selected_variant.price %}hidden{% endunless %}
+      >
+        {% if selected_variant.compare_at_price > selected_variant.price %}
+          {{ selected_variant.compare_at_price | money }}
+        {% endif %}
+      </s>
+    </div>
+
+    <product-form-component
+      id="{{ form_id }}-component"
+      class="purchase-panel__form-component"
+      data-section-id="{{ section_id }}"
+      data-product-id="{{ product.id }}"
+      data-product-url="{{ product.url }}"
+      data-quantity-default="{{ selected_variant.quantity_rule.min | default: 1 }}"
+      data-quantity-error-max="{{ 'products.product.quantity_error_max' | t }}"
+      on:submit="/handleSubmit"
+    >
+      <div class="visually-hidden" aria-live="assertive" role="status" aria-atomic="true" ref="liveRegion"></div>
+
+      {%- form 'product', product, id: form_id, data-type: 'add-to-cart-form' -%}
+        {% unless product.has_only_default_variant %}
+          <label class="purchase-panel__field">
+            <span class="purchase-panel__label">{{ product.options.first | escape }}</span>
+            <span class="purchase-panel__select-wrap">
+              <select class="purchase-panel__select" name="id" ref="variantId" data-purchase-variant-select>
+                {% for variant in product.variants %}
+                  {% liquid
+                    assign variant_image = variant.featured_image | default: product.featured_image
+                    assign variant_compare_price = blank
+                    if variant.compare_at_price > variant.price
+                      assign variant_compare_price = variant.compare_at_price | money
+                    endif
+                    assign cart_quantity = cart | item_count_for_variant: variant.id
+                    assign variant_can_add = variant.available
+                    assign variant_max = variant.quantity_rule.max
+                    if variant.inventory_management == 'shopify' and variant.inventory_policy == 'deny'
+                      assign remaining_inventory = variant.inventory_quantity | minus: cart_quantity
+                      if remaining_inventory < variant.quantity_rule.min
+                        assign variant_can_add = false
+                      endif
+                      if variant_max == blank or remaining_inventory < variant_max
+                        assign variant_max = remaining_inventory
+                      endif
+                    endif
+                  %}
+                  <option
+                    value="{{ variant.id }}"
+                    data-available="{{ variant_can_add }}"
+                    data-price="{{ variant.price | money | escape }}"
+                    data-compare-price="{{ variant_compare_price | escape }}"
+                    data-image-url="{% if variant_image %}{{ variant_image | image_url: width: 900 }}{% endif %}"
+                    data-image-alt="{{ variant_image.alt | default: product.title | escape }}"
+                    data-min="{{ variant.quantity_rule.min | default: 1 }}"
+                    data-step="{{ variant.quantity_rule.increment | default: 1 }}"
+                    {% if variant_max and variant_max > 0 %}data-max="{{ variant_max }}"{% endif %}
+                    data-cart-quantity="{{ cart_quantity }}"
+                    {% if variant.id == selected_variant.id %}selected{% endif %}
+                  >
+                    {{- variant.title | escape -}}
+                    {%- unless variant_can_add %} — {{ sold_out_text }}{% endunless -%}
+                  </option>
+                {% endfor %}
+              </select>
+              <span class="svg-wrapper purchase-panel__caret" aria-hidden="true">
+                {{- 'icon-caret.svg' | inline_asset_content -}}
+              </span>
+            </span>
+          </label>
+        {% else %}
+          <select name="id" ref="variantId" data-purchase-variant-select hidden aria-hidden="true">
+            <option
+              value="{{ selected_variant.id }}"
+              data-available="{{ selected_can_add }}"
+              data-price="{{ selected_variant.price | money | escape }}"
+              data-image-url="{% if image_to_show %}{{ image_to_show | image_url: width: 900 }}{% endif %}"
+              data-image-alt="{{ image_to_show.alt | default: product.title | escape }}"
+              data-min="{{ selected_variant.quantity_rule.min | default: 1 }}"
+              data-step="{{ selected_variant.quantity_rule.increment | default: 1 }}"
+            >{{ selected_variant.title | escape }}</option>
+          </select>
+        {% endunless %}
+
+        <div class="purchase-panel__actions">
+          <div class="purchase-panel__quantity">
+            <span class="visually-hidden">{{ 'products.product.quantity' | t }}</span>
+            <div class="purchase-panel__quantity-selector">
+              <button
+                class="button button-unstyled purchase-panel__quantity-button"
+                type="button"
+                data-purchase-quantity-minus
+                aria-label="{{ 'accessibility.decrease_quantity' | t }}"
+              >
+                <span class="svg-wrapper">{{- 'icon-minus.svg' | inline_asset_content -}}</span>
+              </button>
+              <input
+                class="purchase-panel__quantity-input"
+                type="number"
+                name="quantity"
+                value="{{ selected_variant.quantity_rule.min | default: 1 }}"
+                min="{{ selected_variant.quantity_rule.min | default: 1 }}"
+                step="{{ selected_variant.quantity_rule.increment | default: 1 }}"
+                {% if selected_variant.inventory_management == 'shopify' and selected_variant.inventory_policy == 'deny' %}
+                  max="{{ selected_remaining }}"
+                {% elsif selected_variant.quantity_rule.max %}
+                  max="{{ selected_variant.quantity_rule.max }}"
+                {% endif %}
+                data-purchase-quantity
+                aria-label="{{ 'accessibility.quantity' | t }}"
+              >
+              <button
+                class="button button-unstyled purchase-panel__quantity-button"
+                type="button"
+                data-purchase-quantity-plus
+                aria-label="{{ 'accessibility.increase_quantity' | t }}"
+              >
+                <span class="svg-wrapper">{{- 'icon-plus.svg' | inline_asset_content -}}</span>
+              </button>
+            </div>
+          </div>
+
+          <add-to-cart-component
+            ref="addToCartButtonContainer"
+            data-product-variant-media="{% if image_to_show %}{{ image_to_show | image_url: width: 100 }}{% endif %}"
+            data-add-to-cart-animation="{{ settings.add_to_cart_animation }}"
+          >
+            <button
+              type="submit"
+              name="add"
+              ref="addToCartButton"
+              on:click="/handleClick"
+              class="button purchase-panel__submit"
+              data-purchase-submit
+              data-available-text="{{ add_text | escape }}"
+              data-sold-out-text="{{ sold_out_text | escape }}"
+              {% unless selected_can_add %}disabled{% endunless %}
+            >
+              <span data-purchase-submit-label>
+                {% if selected_can_add %}{{ add_text }}{% else %}{{ sold_out_text }}{% endif %}
+              </span>
+              <span class="add-to-cart__added">
+                <span class="svg-wrapper add-to-cart__added-icon">
+                  {{- 'icon-checkmark-burst.svg' | inline_asset_content -}}
+                </span>
+              </span>
+            </button>
+          </add-to-cart-component>
+        </div>
+      {%- endform -%}
+    </product-form-component>
+  </div>
+</purchase-panel>
+
+{% render 'purchase-panel-styles' %}

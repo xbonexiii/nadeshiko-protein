@@ -40,7 +40,7 @@ import { StandardEvents, ProductSelectEvent, CartLinesUpdateEvent, CartErrorEven
  * @extends {Component<StickyAddToCartRefs>}
  */
 class StickyAddToCartComponent extends Component {
-  requiredRefs = ['stickyBar', 'addToCartButton', 'quantityDisplay', 'quantityNumber'];
+  requiredRefs = ['stickyBar'];
 
   /** @type {IntersectionObserver | null} */
   #buyButtonsIntersectionObserver = null;
@@ -75,15 +75,6 @@ class StickyAddToCartComponent extends Component {
     this.#setupIntersectionObserver();
 
     const { signal } = this.#abortController;
-    const target = this.closest('.shopify-section');
-    target?.addEventListener(StandardEvents.productSelect, this.#handleProductSelect, { signal });
-
-    document.addEventListener(StandardEvents.cartLinesUpdate, this.#handleCartAddComplete, { signal });
-    document.addEventListener(StandardEvents.cartError, this.#handleCartAddComplete, { signal });
-    document.addEventListener(ThemeEvents.quantitySelectorUpdate, this.#handleQuantityUpdate, { signal });
-
-    this.#getInitialQuantity();
-
     // IntersectionObserver callbacks gate visibility on #isChatActive(), but
     // if the shopper scrolls before the Inbox bundle has upgraded
     // <shopify-chat>, the bar shows and nothing re-runs that check. Hide it
@@ -166,7 +157,6 @@ class StickyAddToCartComponent extends Component {
 
     this.#buyButtonsIntersectionObserver.observe(buyButtonsBlock);
     this.#mainBottomObserver.observe(footer);
-    this.#targetAddToCartButton = productForm.querySelector('[ref="addToCartButton"]');
   }
 
   // Public action handlers
@@ -366,7 +356,7 @@ class StickyAddToCartComponent extends Component {
 
     const sectionId = sectionElement.id.replace('shopify-section-', '');
     return document.querySelector(
-      `#shopify-section-${sectionId} product-form-component[data-product-id="${productId}"]`
+      `#shopify-section-${sectionId} product-form-component[data-product-id="${productId}"]:not(.purchase-panel__form-component)`
     );
   }
 

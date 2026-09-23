@@ -247,7 +247,7 @@ class ProductFormComponent extends Component {
   }
 
   #getVariantIdInput() {
-    return /** @type {HTMLInputElement | null} */ (this.querySelector('input[name="id"]'))?.value;
+    return /** @type {HTMLInputElement | HTMLSelectElement | null} */ (this.querySelector('[name="id"]'))?.value;
   }
 
   async #refreshCart() {
@@ -323,6 +323,13 @@ class ProductFormComponent extends Component {
   /** @param {Event} event */
   handleSubmit(event) {
     event.preventDefault();
+
+    // The compact purchase panel owns its variant and quantity controls locally;
+    // it never needs to wait for the product-page section-rendering request.
+    if (this.closest('purchase-panel')) {
+      this.#processAddToCart(undefined, undefined, event);
+      return;
+    }
 
     if (this.#variantChangeInProgress) {
       this.#addToCartQueue.push(this.#createQueuedAddToCartItem());
